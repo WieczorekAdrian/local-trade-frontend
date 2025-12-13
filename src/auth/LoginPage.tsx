@@ -1,79 +1,95 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginUser } from "./auth.service";
+import { Link, useNavigate } from "react-router-dom"; // 1. DODAJ useNavigate tutaj
+import { toast } from "sonner"
 
-export const LoginPage = () => {
+export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // Nie przeładowuj strony!
+    const navigate = useNavigate();
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
         setIsLoading(true);
-        setError(null);
-
         try {
-            const response = await loginUser({ email, password });
-
-            console.log("Zalogowano!", response);
-            alert("Sukces! Token: " + response.token.substring(0, 15) + "...");
-
-        } catch (err: any) {
-            console.error(err);
-            setError("Błąd logowania. Sprawdź email i hasło.");
+            await loginUser({ email, password });
+            toast.success("Zalogowano pomyślnie!", {
+                description: "Witaj z powrotem w Local Trade",
+            });
+            navigate("/dashboard");
+        } catch (error) {
+            console.error("Szczegóły błędu logowania:", error);
+            toast.error("Błąd logowania", {
+                description: "Nie udało się połączyć z serwerem.",
+            });
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-                    Zaloguj się
-                </h2>
-
-                {error && (
-                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
-                        {error}
+        <div className="flex h-screen w-full items-center justify-center bg-background px-4">
+            {/* Reszta Twojego kodu JSX bez zmian */}
+            <Card className="w-full max-w-md shadow-xl">
+                <CardHeader className="space-y-1">
+                    <CardTitle className="text-2xl font-bold tracking-tight text-center">
+                        Witaj ponownie
+                    </CardTitle>
+                    <CardDescription className="text-center">
+                        Wprowadź swoje dane, aby zalogować się do Local Trade
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleLogin} className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="m@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password">Hasło</Label>
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-sm font-medium text-muted-foreground hover:underline"
+                                >
+                                    Zapomniałeś hasła?
+                                </Link>
+                            </div>
+                            <Input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? "Logowanie..." : "Zaloguj się"}
+                        </Button>
+                    </form>
+                </CardContent>
+                <CardFooter className="flex flex-col gap-4 border-t p-6">
+                    <div className="text-sm text-center text-muted-foreground">
+                        Nie masz konta?{" "}
+                        <Link to="/signup" className="font-semibold text-primary hover:underline">
+                            Zarejestruj się za darmo
+                        </Link>
                     </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Hasło</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-              ${isLoading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"} 
-              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors`}
-                    >
-                        {isLoading ? "Logowanie..." : "Zaloguj się"}
-                    </button>
-                </form>
-            </div>
+                </CardFooter>
+            </Card>
         </div>
     );
-};
+}

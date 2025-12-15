@@ -1,73 +1,38 @@
-# React + TypeScript + Vite
+# Local Trade - Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the client-side application for "Local Trade," a marketplace platform built to demonstrate modern React development practices. The project focuses on clean architecture, type safety, and secure authentication patterns.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Core:** React (Vite), TypeScript
+- **Styling:** Tailwind CSS
+- **State Management:** React Context API (Global State)
+- **HTTP Client:** Axios (with Interceptors)
+- **Routing:** React Router DOM
 
-## React Compiler
+## Key Features & Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Secure Authentication Pattern
+Unlike standard implementations that rely on storing tokens in `localStorage` (which is vulnerable to XSS attacks), this client is architected to handle authentication via **HttpOnly cookies**.
 
-## Expanding the ESLint configuration
+- The application includes a dedicated `AuthProvider` that automatically verifies user sessions upon initialization using a secure `/auth/me` endpoint.
+- Custom hooks (`useAuth`) abstract the complexity of session management from the UI components.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 2. Clean Architecture & Separation of Concerns
+The codebase strictly separates business logic from presentation:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Services:** All API communication is centralized in `services/`, keeping components clean.
+- **Smart vs. Dumb Components:** Pages handle data fetching and logic, while UI components focus purely on presentation.
+- **Custom Hooks:** Reusable logic is encapsulated in custom hooks to maintain DRY (Don't Repeat Yourself) principles.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 3. Strict Typing
+The project utilizes TypeScript to its full potential. API responses and application state are strictly typed to ensure data consistency with the backend and to prevent runtime errors.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Prerequisites
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- Node.js (v18 or higher)
+- A running instance of the Backend API
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Author 
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Author: Adrian Wieczorek

@@ -24,7 +24,6 @@ export default function DashboardPage() {
                 setAds(data);
             } catch (e) {
                 console.error("Błąd pobierania ogłoszeń:", e);
-                // Opcjonalnie: toast.error("Nie udało się pobrać ogłoszeń");
             } finally {
                 setIsLoading(false);
             }
@@ -41,7 +40,6 @@ export default function DashboardPage() {
                     </Link>
 
                     <div className="flex gap-4 items-center">
-                        {/* WARUNEK: Sprawdzamy obiekt 'user' z Contextu */}
                         {user ? (
                             <>
                                 <div className="hidden md:flex flex-col items-end mr-2">

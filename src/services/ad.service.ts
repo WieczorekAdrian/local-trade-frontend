@@ -14,6 +14,6 @@ export interface Advertisement {
 }
 
 export const getAllAds = async (): Promise<Advertisement[]> => {
-    const response = await api.get<Advertisement[]>("/api/advertisements");
+    const response = await api.get<Advertisement[]>("/advertisements/search");
     return response.data;
 };

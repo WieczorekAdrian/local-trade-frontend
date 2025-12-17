@@ -1,28 +1,27 @@
-import { useState } from "react";
+import { useState} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { loginUser } from "../api/auth.service";
-import { Link, useNavigate } from "react-router-dom"; // 1. DODAJ useNavigate tutaj
+import { Link } from "react-router-dom";
 import { toast } from "sonner"
+import {useAuth} from "@/context/auth.context";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const navigate = useNavigate();
+    const {login} = useAuth();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            await loginUser({ email, password });
+            await login({ email, password });
             toast.success("Zalogowano pomyślnie!", {
                 description: "Witaj z powrotem w Local Trade",
             });
-            navigate("/dashboard");
         } catch (error) {
             console.error("Szczegóły błędu logowania:", error);
             toast.error("Błąd logowania", {
@@ -35,7 +34,6 @@ export default function LoginPage() {
 
     return (
         <div className="flex h-screen w-full items-center justify-center bg-background px-4">
-            {/* Reszta Twojego kodu JSX bez zmian */}
             <Card className="w-full max-w-md shadow-xl">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold tracking-tight text-center">

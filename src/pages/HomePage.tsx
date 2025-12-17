@@ -6,7 +6,7 @@ import { AdCard } from "@/components/AdCard";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth.context";
 
-export default function DashboardPage() {
+export default function HomePage() {
     const [ads, setAds] = useState<Advertisement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -14,7 +14,7 @@ export default function DashboardPage() {
 
     const handleLogoutButton = async () => {
         toast.info("Wylogowywanie...");
-        logout();
+        await logout();
     };
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export default function DashboardPage() {
                                         {user.email}
                                     </span>
                                     <span className="text-xs text-muted-foreground">
-                                        Ocena: {user.averageRating ? user.averageRating.toFixed(1) : "Brak"} ({user.ratingCount})
+                                        Ocena: {user.stats.rating ? user.stats.rating.toFixed(1) : "Brak"} ({user.stats.count})
                                     </span>
                                 </div>
                                 <Button variant="ghost" size="sm">Mój profil</Button>

@@ -2,24 +2,21 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import { Toaster } from "@/components/ui/sonner"
-import DashboardPage from "@/pages/DashBoard";
 import { AuthProvider } from "@/context/AuthProvider";
 import { PrivateRoute } from "@/components/common/PrivateRoute";
+import HomePage from "@/pages/HomePage";
 
 function App() {
     return (
         <BrowserRouter>
             <AuthProvider>
             <Routes>
-                <Route path="/" element={<DashboardPage />} />
+                <Route path="/" element={<HomePage />} />
                 <Route element={<PrivateRoute />}>
-                    <Route path="/" element={<DashboardPage />} /> {/* Główna trasa po zalogowaniu */}
-                    <Route path="/dashboard" element={<DashboardPage />} /> {/* Alternatywna trasa */}
                 </Route>
-
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<RegisterPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/" element={<HomePage />} />
             </Routes>
             <Toaster position="top-right" richColors />
         </AuthProvider>

@@ -4,7 +4,7 @@ export interface LoginRequest {
 }
 export interface AuthContextType{
     isLoading: boolean;
-    user: UserResponse | null;
+    user: User| null;
     checkSession: () => Promise<void>;
     login: (credentials: LoginRequest) => Promise<void>;
     logout: () => Promise<void>;
@@ -20,10 +20,19 @@ export interface UserResponse {
     email: string;
     ratingCount: number;
     averageRating: number;
+    role: string;
+    userId: string;
+    name: string;
 }
+
 export interface User {
     id: string;
     email: string;
     name: string;
-    roles: ('ROLE_USER' | 'ROLE_ADMIN')[];
+    isAdmin: boolean;
+    role: string;
+    stats: {
+        rating: number;
+        count: number;
+    };
 }

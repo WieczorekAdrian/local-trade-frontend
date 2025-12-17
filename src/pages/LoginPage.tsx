@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { toast } from "sonner"
-import {useAuth} from "@/context/auth.context";
+import {useAuth} from "@/auth/auth.context";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");

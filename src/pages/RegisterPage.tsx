@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../api/auth.service";
+import { registerUser } from "../auth/auth.service";
 
 export default function RegisterPage() {
     const [name, setName] = useState("");

@@ -1,5 +1,5 @@
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from "react";
-import {getCurrentUser, loginUser, logoutUser} from "@/api/auth.service";
+import {getCurrentUser, loginUser, logoutUser} from "@/auth/auth.service";
 import type {LoginRequest, User, UserResponse} from "@/auth/auth.types";
 import { AuthContext } from "./auth.context";
 import {useNavigate} from "react-router-dom";

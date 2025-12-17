@@ -1,31 +1,26 @@
-import { api } from "./axiosConfig";
-import type {LoginRequest, LoginResponse, RegisterRequest, UserResponse} from "./auth.types";
+import { api } from "@/auth/axiosConfig";
+import type { LoginRequest,  RegisterRequest, UserResponse } from "@/auth/auth.types";
 
-export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>("/auth/login", data);
+export const loginUser = async (data: LoginRequest): Promise<void> => {
+    await api.post("/auth/login", data);
 
-    if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-
-    }
-
-    return response.data;
 };
+
 export const registerUser = async (data: RegisterRequest): Promise<void> => {
     await api.post("/auth/signup", data);
 };
+
 export const getCurrentUser = async (): Promise<UserResponse> => {
     const response = await api.get<UserResponse>("/users/me");
     return response.data;
 };
 
-export const logoutUser = async () => {
+export const logoutUser = async (): Promise<void> => {
     try {
         await api.post("/auth/logout");
     } catch (e) {
         console.error("Błąd wylogowania na serwerze", e);
     } finally {
-        localStorage.removeItem("token");
+        localStorage.removeItem("user");
     }
-
 };

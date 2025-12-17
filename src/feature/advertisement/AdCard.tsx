@@ -18,7 +18,6 @@ export function AdCard({ title, price, location, image }: AdCardProps) {
 
     return (
         <Card className="group overflow-hidden border-border/50 hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-md">
-            {/* Sekcja zdjęcia */}
             <div className="aspect-[4/3] w-full bg-secondary flex items-center justify-center overflow-hidden group-hover:bg-secondary/80 transition-colors">
                 {image ? (
                     <img

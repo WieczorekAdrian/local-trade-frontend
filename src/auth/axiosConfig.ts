@@ -1,48 +1,81 @@
-import axios from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: true,
-    headers: {
-        "Content-Type": "application/json",
-    },
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+interface QueueItem {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}
+
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
+let isRefreshing = false;
+let failedQueue: QueueItem[] = [];
+
+const processQueue = (error: Error | null, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as CustomAxiosRequestConfig;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            try {
-                const response = await api.post("/auth/refreshToken");
-                const { token } = response.data;
-
-                localStorage.setItem("token", token);
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-
-                return api(originalRequest);
-            } catch (refreshError) {
-                localStorage.removeItem("token");
-                window.location.href = "/login";
-                return Promise.reject(refreshError);
-            }
-        }
-        return Promise.reject(error);
+    if (!originalRequest) {
+      return Promise.reject(error);
     }
+
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        await api.post("/auth/refreshToken");
+
+        processQueue(null);
+
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError instanceof Error ? refreshError : new Error("Refresh failed"), null);
+
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  },
 );

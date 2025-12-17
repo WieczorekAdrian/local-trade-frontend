@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { getAllAds, type Advertisement } from "@/services/ad.service";
-import { AdCard } from "@/components/AdCard";
+import { getAllAds, type Advertisement } from "@/feature/advertisement/ad.service";
+import { AdCard } from "@/feature/advertisement/AdCard";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/auth.context";
+import { Plus } from "lucide-react";
 
-export default function DashboardPage() {
+export default function HomePage() {
     const [ads, setAds] = useState<Advertisement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -14,7 +15,7 @@ export default function DashboardPage() {
 
     const handleLogoutButton = async () => {
         toast.info("Wylogowywanie...");
-        logout();
+        await logout();
     };
 
     useEffect(() => {
@@ -42,20 +43,27 @@ export default function DashboardPage() {
                     <div className="flex gap-4 items-center">
                         {user ? (
                             <>
+                                <Link to="/add-offer">
+                                    <Button className="mr-4 gap-2 font-bold" variant="default">
+                                        <Plus className="h-4 w-4" />
+                                        Dodaj ogłoszenie
+                                    </Button>
+                                </Link>
+
                                 <div className="hidden md:flex flex-col items-end mr-2">
-                                    <span className="text-sm font-medium leading-none">
-                                        {user.email}
-                                    </span>
+            <span className="text-sm font-medium leading-none">
+                {user.email}
+            </span>
                                     <span className="text-xs text-muted-foreground">
-                                        Ocena: {user.averageRating ? user.averageRating.toFixed(1) : "Brak"} ({user.ratingCount})
-                                    </span>
+                Ocena: {user.stats.rating ? user.stats.rating.toFixed(1) : "Brak"} ({user.stats.count})
+            </span>
                                 </div>
                                 <Button variant="ghost" size="sm">Mój profil</Button>
                                 <Button variant="outline" size="sm" onClick={handleLogoutButton}>
                                     Wyloguj
                                 </Button>
                             </>
-                        ) : (
+                        ): (
                             <>
                                 <Link to="/login">
                                     <Button variant="ghost">Zaloguj się</Button>
@@ -92,10 +100,17 @@ export default function DashboardPage() {
                                 <p className="text-lg text-muted-foreground mb-4">
                                     Jeszcze nikt nic nie dodał.
                                 </p>
-                                {user && (
-                                    <Button onClick={() => toast.info("Funkcja dodawania wkrótce!")}>
-                                        Dodaj pierwsze ogłoszenie
-                                    </Button>
+                                {user ? (
+                                    <Link to="/add-offer">
+                                        <Button size="lg" className="gap-2">
+                                            <Plus className="h-5 w-5" />
+                                            Dodaj pierwsze ogłoszenie
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Link to="/login">
+                                        <Button variant="outline">Zaloguj się, aby dodać ogłoszenie</Button>
+                                    </Link>
                                 )}
                             </div>
                         )}

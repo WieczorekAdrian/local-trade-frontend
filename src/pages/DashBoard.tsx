@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { getAllAds, type Advertisement } from "@/services/ad.service";
+import { getAllAds, type Advertisement } from "@/api/ad.service";
 import { AdCard } from "@/components/AdCard";
 import { toast } from "sonner";
-import { useAuth } from "@/auth/auth.context";
+import { useAuth } from "@/context/auth.context";
 
 export default function DashboardPage() {
     const [ads, setAds] = useState<Advertisement[]>([]);

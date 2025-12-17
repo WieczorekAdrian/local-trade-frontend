@@ -1,4 +1,4 @@
-import { api } from "@/auth/axiosConfig";
+import { api } from "@/api/axiosConfig";
 
 export interface Advertisement {
     advertisementId: string;

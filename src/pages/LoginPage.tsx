@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { loginUser } from "./auth.service";
+import { loginUser } from "../api/auth.service";
 import { Link, useNavigate } from "react-router-dom"; // 1. DODAJ useNavigate tutaj
 import { toast } from "sonner"
 

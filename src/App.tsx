@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "./auth/LoginPage";
-import RegisterPage from "@/auth/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
 import { Toaster } from "@/components/ui/sonner"
-import DashboardPage from "@/services/DashBoard";
-import { AuthProvider } from "@/auth/AuthProvider";
+import DashboardPage from "@/pages/DashBoard";
+import { AuthProvider } from "@/context/AuthProvider";
 
 function App() {
     return (

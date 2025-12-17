@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useState } from "react";
-import { getCurrentUser, logoutUser } from "./auth.service";
+import { getCurrentUser, logoutUser } from "../api/auth.service";
 import type { UserResponse } from "@/auth/auth.types";
 import { AuthContext } from "./auth.context";
 

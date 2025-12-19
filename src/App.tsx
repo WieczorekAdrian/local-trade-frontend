@@ -6,6 +6,7 @@ import { AuthProvider } from "@/auth/AuthProvider";
 import { PrivateRoute } from "@/components/common/PrivateRoute";
 import HomePage from "@/pages/HomePage";
 import AddAdvertisementPage from "@/pages/AddAdvertisementPage";
+import SingleAdPage from "@/pages/SingleAdPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/advertisement/:id" element={<SingleAdPage />} />
           <Route element={<PrivateRoute />}>
             <Route path="/add-offer" element={<AddAdvertisementPage />} />
           </Route>

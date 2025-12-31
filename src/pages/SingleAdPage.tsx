@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { getAdById, type Advertisement, formatDate } from "@/feature/advertisement/ad.service";
+import { getAdById, formatDate } from "@/feature/advertisement/ad.service";
+import { FavoriteButton } from "@/feature/advertisement/components/FavoriteButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import type { Advertisement } from "@/feature/advertisement/advertisement.types";
 import {
   MapPin,
   Calendar,
@@ -143,34 +145,35 @@ export default function SingleAdPage() {
               </div>
             )}
           </div>
-
           <div className="flex flex-col gap-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight mb-2">{ad.title}</h1>
-              <p className="text-4xl font-extrabold text-primary">
-                {ad.price.toLocaleString("pl-PL", { style: "currency", currency: "PLN" })}
-              </p>
+            <div className="flex justify-between items-start gap-4">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold tracking-tight mb-2 leading-tight">{ad.title}</h1>
+                <p className="text-4xl font-extrabold text-primary">
+                  {ad.price.toLocaleString("pl-PL", {
+                    style: "currency",
+                    currency: "PLN",
+                  })}
+                </p>
+              </div>
+
+              <div className="flex-shrink-0">
+                <FavoriteButton adId={ad.advertisementId} />
+              </div>
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1 bg-muted/50 px-3 py-1 rounded-full">
+
+            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
                 <MapPin className="h-4 w-4" /> {ad.location}
               </div>
-              <div className="flex items-center gap-1 bg-muted/50 px-3 py-1 rounded-full">
+
+              <div className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
                 <Calendar className="h-4 w-4" />
                 Dodano: {formatDate(ad.createdAt)}
               </div>
             </div>
 
-            <Separator />
-
-            <div className="prose prose-stone dark:prose-invert max-w-none">
-              <h3 className="text-lg font-semibold mb-2">Opis</h3>
-              <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{ad.description}</p>
-            </div>
-
-            <Separator />
-
-            <Card className="bg-card/50 border-primary/20 shadow-sm mt-auto">
+            <Card className="bg-card/50 border-primary/20 shadow-sm">
               <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -202,6 +205,15 @@ export default function SingleAdPage() {
                 )}
               </CardContent>
             </Card>
+
+            <Separator />
+
+            <div className="prose prose-stone dark:prose-invert max-w-none">
+              <h3 className="text-lg font-semibold mb-2">Opis</h3>
+              <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{ad.description}</p>
+            </div>
+
+            <Separator />
           </div>
         </div>
       </div>

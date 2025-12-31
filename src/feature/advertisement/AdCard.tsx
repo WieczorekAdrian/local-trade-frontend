@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ImageOff } from "lucide-react";
-import { type Advertisement, formatDate } from "./ad.service";
+import { formatDate } from "./ad.service";
+import type { Advertisement } from "@/feature/advertisement/advertisement.types";
 
 const fixDockerUrl = (url: string | null | undefined) => {
   if (!url) return null;

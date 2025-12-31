@@ -7,21 +7,24 @@ import { PrivateRoute } from "@/components/common/PrivateRoute";
 import HomePage from "@/pages/HomePage";
 import AddAdvertisementPage from "@/pages/AddAdvertisementPage";
 import SingleAdPage from "@/pages/SingleAdPage";
+import { AdvertisementProvider } from "@/feature/advertisement/AdvertisementContext";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/advertisement/:id" element={<SingleAdPage />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/add-offer" element={<AddAdvertisementPage />} />
-          </Route>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<RegisterPage />} />
-          <Route path="/" element={<HomePage />} />
-        </Routes>
+        <AdvertisementProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/advertisement/:id" element={<SingleAdPage />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/add-offer" element={<AddAdvertisementPage />} />
+            </Route>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<RegisterPage />} />
+            <Route path="/" element={<HomePage />} />
+          </Routes>
+        </AdvertisementProvider>
         <Toaster position="top-right" richColors />
       </AuthProvider>
     </BrowserRouter>

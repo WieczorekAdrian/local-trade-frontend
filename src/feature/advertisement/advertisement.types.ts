@@ -17,7 +17,27 @@ export interface AdvertisementResponse {
   description: string;
   active: boolean;
   location: string;
-
   imageUrls: string[];
   thumbnailUrls: string[];
+}
+
+export interface Advertisement {
+  createdAt: string;
+  advertisementId: string;
+  sellerId: string;
+  sellerEmail: string;
+  categoryId: number;
+  price: number;
+  title: string;
+  image: string | null;
+  description: string;
+  active?: boolean;
+  location: string;
+  imageUrls: string[];
+  thumbnailUrls: string[];
+  isFavorite?: boolean;
+}
+
+export interface FavoriteAdvertisementDto {
+  advertisementId: string;
 }

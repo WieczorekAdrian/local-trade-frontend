@@ -8,17 +8,21 @@ import HomePage from "@/pages/HomePage";
 import AddAdvertisementPage from "@/pages/AddAdvertisementPage";
 import SingleAdPage from "@/pages/SingleAdPage";
 import { AdvertisementProvider } from "@/feature/advertisement/AdvertisementContext";
+import { FavoritesPage } from "@/pages/FavoritesPage";
+import { Navbar } from "@/pages/layout/Navbar";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <AdvertisementProvider>
+          <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/advertisement/:id" element={<SingleAdPage />} />
             <Route element={<PrivateRoute />}>
               <Route path="/add-offer" element={<AddAdvertisementPage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<RegisterPage />} />

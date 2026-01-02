@@ -17,11 +17,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Maximize2,
+  X, // Dodany import ikony zamknięcia
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/auth.context";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+
+import { ChatWindow } from "@/feature/chat/components/ChatWindow";
 
 const fixDockerUrl = (url: string | null | undefined) => {
   if (!url) return null;
@@ -32,19 +35,24 @@ export default function SingleAdPage() {
   const { id } = useParams<{ id: string }>();
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false); // Stan otwarcia czatu
   const { user } = useAuth();
   const location = useLocation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
   const images = ad?.imageUrls?.map(fixDockerUrl) || [];
+
   const nextImage = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
+
   const prevImage = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
+
   useEffect(() => {
     if (!id) return;
 
@@ -190,12 +198,15 @@ export default function SingleAdPage() {
                     To Twoje ogłoszenie
                   </Button>
                 ) : user ? (
-                  <Link to={`/chat?recipientId=${ad.sellerId}&adId=${ad.advertisementId}`}>
-                    <Button size="lg" className="w-full sm:w-auto gap-2 font-bold shadow-lg shadow-primary/20">
-                      <MessageCircle className="h-5 w-5" />
-                      Napisz wiadomość
-                    </Button>
-                  </Link>
+                  // Zmienione na przycisk otwierający czat zamiast Linku
+                  <Button
+                    size="lg"
+                    onClick={() => setIsChatOpen(true)}
+                    className="w-full sm:w-auto gap-2 font-bold shadow-lg shadow-primary/20"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    Napisz wiadomość
+                  </Button>
                 ) : (
                   <Link to="/login" state={{ from: location }}>
                     <Button variant="secondary" size="lg" className="w-full sm:w-auto gap-2">
@@ -230,6 +241,21 @@ export default function SingleAdPage() {
           animation={{ fade: 300, swipe: 250 }}
           controller={{ closeOnBackdropClick: true }}
         />
+      )}
+
+      {/* OKNO CZATU - Pływające w rogu ekranu */}
+      {isChatOpen && ad && (
+        <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-10 duration-300">
+          <div className="relative">
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1.5 shadow-xl hover:scale-110 transition-transform z-[110]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <ChatWindow recipientUsername={ad.sellerEmail || "Użytkownik"} />
+          </div>
+        </div>
       )}
     </>
   );

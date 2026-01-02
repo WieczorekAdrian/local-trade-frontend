@@ -24,7 +24,6 @@ export const AdvertisementProvider = ({ children }: { children: ReactNode }) => 
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  // 1. Pobieranie wszystkich ogłoszeń
   const fetchAds = async () => {
     setLoading(true);
     try {
@@ -37,7 +36,6 @@ export const AdvertisementProvider = ({ children }: { children: ReactNode }) => 
     }
   };
 
-  // 2. Pobieranie polubionych ID (tylko dla zalogowanego)
   const fetchFavorites = async () => {
     if (!user) {
       setFavoriteIds(new Set());

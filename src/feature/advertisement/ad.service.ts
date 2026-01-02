@@ -57,20 +57,9 @@ export const createAdvertisement = async (
 
 export const getMyFavorites = async () => {
   const response = await api.get("/favorite/me");
-  return response.data; // Zwraca Set<FavoriteAdvertisementDto>
+  return response.data;
 };
 
 export const addToFavorite = (id: string) => api.post(`/favorite/${id}`);
 
 export const removeFromFavorite = (id: string) => api.delete(`/favorite/${id}`);
-
-export const toggleFavoriteApi = async (advertisementId: string, isFavorite: boolean): Promise<void> => {
-  await api.post(`/favorite/${advertisementId}`, {
-    favorite: isFavorite,
-  });
-};
-
-export const getFavoriteAds = async () => {
-  const response = await api.get("/favorite/me");
-  return response.data;
-};

@@ -8,7 +8,7 @@ export const useChat = (recipientUsername: string) => {
 
   useEffect(() => {
     stompClient.current = new Client({
-      brokerURL: "ws://localhost:8080/ws",
+      brokerURL: import.meta.env.VITE_WS_URL,
 
       onConnect: () => {
         console.log("Połączono przez Native WebSocket!");

@@ -3,6 +3,7 @@ export interface ChatMessage {
   sender: string;
   recipient: string;
   timestamp: string;
+  isRead?: boolean;
 }
 
 export interface ChatWindowProps {

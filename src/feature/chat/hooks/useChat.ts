@@ -5,10 +5,11 @@ import type { ChatMessage } from "@/feature/chat/chat.types";
 
 export const useChat = (recipientUsername: string) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isPartnerTyping, setIsPartnerTyping] = useState(false); // Nowy stan
+  const [isPartnerTyping, setIsPartnerTyping] = useState(false);
   const stompClient = useRef<Client | null>(null);
 
   const markAsRead = useCallback(async () => {
+    if (!recipientUsername) return;
     try {
       await axios.patch(
         `${import.meta.env.VITE_API_URL}/chats/read-all/${recipientUsername}`,
@@ -16,49 +17,83 @@ export const useChat = (recipientUsername: string) => {
         { withCredentials: true },
       );
     } catch (err) {
-      console.error("Błąd przy oznaczaniu jako przeczytane:", err);
+      console.error(err);
     }
   }, [recipientUsername]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchHistory = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/chats/history/${recipientUsername}`, {
           withCredentials: true,
         });
-        setMessages(response.data);
-        await markAsRead();
+        if (isMounted) {
+          setMessages(response.data);
+          await markAsRead();
+        }
       } catch (err) {
-        console.error("Nie udało się pobrać historii:", err);
+        console.error(err);
       }
     };
 
-    fetchHistory();
+    if (recipientUsername) {
+      fetchHistory();
+    }
 
-    stompClient.current = new Client({
+    // Cleanup state on unmount or recipient change
+    return () => {
+      isMounted = false;
+      setMessages([]);
+      setIsPartnerTyping(false);
+    };
+  }, [recipientUsername, markAsRead]);
+
+  useEffect(() => {
+    if (!recipientUsername) return;
+
+    if (stompClient.current) {
+      stompClient.current.deactivate();
+    }
+
+    const client = new Client({
       brokerURL: import.meta.env.VITE_WS_URL,
+      reconnectDelay: 5000,
       onConnect: () => {
-        // 1. Subskrypcja wiadomości
-        stompClient.current?.subscribe("/user/queue/messages", (message) => {
+        client.subscribe("/user/queue/messages", (message) => {
           const receivedMsg: ChatMessage = JSON.parse(message.body);
-          setMessages((prev) => [...prev, receivedMsg]);
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.content === receivedMsg.content && m.timestamp === receivedMsg.timestamp);
+            return exists ? prev : [...prev, receivedMsg];
+          });
           markAsRead();
         });
 
-        // 2. Subskrypcja statusu pisania
-        stompClient.current?.subscribe("/user/queue/typing", (message) => {
+        // B. Subscribe to typing status
+        client.subscribe("/user/queue/typing", (message) => {
           const data = JSON.parse(message.body);
-          if (data.sender === recipientUsername) {
-            setIsPartnerTyping(data.isTyping);
+
+          // Handle potential field naming discrepancies (isTyping vs typing)
+          const typingStatus = data.isTyping !== undefined ? data.isTyping : data.typing;
+
+          const sender = (data.sender || "").toString().toLowerCase().trim();
+          const currentRecipient = recipientUsername.toString().toLowerCase().trim();
+
+          if (sender === currentRecipient) {
+            setIsPartnerTyping(!!typingStatus);
           }
         });
       },
     });
 
-    stompClient.current.activate();
+    client.activate();
+    stompClient.current = client;
 
     return () => {
-      stompClient.current?.deactivate();
+      if (client) {
+        client.deactivate();
+      }
+      setIsPartnerTyping(false);
     };
   }, [recipientUsername, markAsRead]);
 
@@ -71,7 +106,6 @@ export const useChat = (recipientUsername: string) => {
     }
   };
 
-  // Funkcja wysyłająca informację "ja piszę"
   const sendTypingStatus = (isTyping: boolean) => {
     if (stompClient.current?.connected) {
       stompClient.current.publish({

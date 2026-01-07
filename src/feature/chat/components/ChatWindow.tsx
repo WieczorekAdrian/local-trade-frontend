@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useChat } from "@/feature/chat/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, CheckCheck, Check, MoreHorizontal } from "lucide-react";
+import { Send } from "lucide-react";
 import { useAuth } from "@/auth/auth.context";
 import type { ChatWindowProps } from "@/feature/chat/chat.types";
 
@@ -11,11 +11,10 @@ export function ChatWindow({ recipientUsername }: ChatWindowProps) {
   const { user } = useAuth();
   const [inputText, setInputText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // KLUCZOWA POPRAWKA: Sprawdź co dokładnie masz w user.name i w msg.sender
-  // Jeśli backend wysyła Name, użyj user?.name. Jeśli Email, użyj user?.email.
-  const currentId = user?.email;
+  const currentUsername = user?.email || "";
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -23,10 +22,29 @@ export function ChatWindow({ recipientUsername }: ChatWindowProps) {
     }
   }, [messages, isPartnerTyping]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        sendTypingStatus(false);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    // Wysyłanie statusu "ja piszę"
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInputText(newValue);
+
+    if (newValue.trim() === "") {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+      sendTypingStatus(false);
+      return;
+    }
+
     if (!typingTimeoutRef.current) {
       sendTypingStatus(true);
     }
@@ -42,72 +60,77 @@ export function ChatWindow({ recipientUsername }: ChatWindowProps) {
   const handleSend = () => {
     if (inputText.trim()) {
       sendMessage(inputText);
+
       sendTypingStatus(false);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+
       setInputText("");
     }
   };
 
   return (
-    <div className="flex flex-col h-[500px] w-[380px] border rounded-2xl shadow-2xl bg-card overflow-hidden border-border/50">
-      <div className="bg-primary/95 backdrop-blur-sm p-4 flex items-center justify-between text-white shadow-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center font-bold text-xs">
-            {recipientUsername[0].toUpperCase()}
-          </div>
-          <span className="font-semibold text-sm truncate">{recipientUsername}</span>
+    <div className="flex flex-col h-[500px] w-[380px] border rounded-2xl shadow-2xl bg-card overflow-hidden font-sans border-border/50">
+      {/* NAGŁÓWEK */}
+      <div className="bg-[#63b38d] p-4 flex items-center gap-3 text-white shadow-sm">
+        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">
+          {recipientUsername && recipientUsername[0] ? recipientUsername[0].toUpperCase() : "?"}
         </div>
-        <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+        <span className="font-semibold text-sm truncate">{recipientUsername}</span>
       </div>
 
-      <div ref={scrollRef} className="flex-grow p-4 overflow-y-auto space-y-4 bg-muted/10 scroll-smooth">
+      {/* LISTA WIADOMOŚCI */}
+      <div ref={scrollRef} className="flex-grow p-4 overflow-y-auto space-y-4 bg-gray-50/30 scroll-smooth">
         {messages.map((msg, index) => {
-          // Jeśli wiadomość nadal jest po złej stronie, zrób: console.log(msg.sender, currentId)
-          const isMe = msg.sender === currentId;
-
+          const isMe = msg.sender === currentUsername;
           return (
             <div
               key={index}
-              className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+              className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in duration-200`}
             >
               <div
-                className={`max-w-[80%] p-3 rounded-2xl text-sm shadow-sm relative ${
-                  isMe
-                    ? "bg-primary text-primary-foreground rounded-br-none"
-                    : "bg-background border text-foreground rounded-bl-none"
+                className={`max-w-[80%] p-3 rounded-2xl text-sm break-words ${
+                  isMe ? "bg-[#63b38d] text-white rounded-br-none" : "bg-white border text-gray-800 rounded-bl-none"
                 }`}
               >
-                <p className="break-words">{msg.content}</p>
-                <div className="flex items-center justify-end gap-1 mt-1 opacity-70 text-[10px]">
-                  {msg.timestamp &&
-                    new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  {isMe &&
-                    (msg.isRead ? <CheckCheck className="h-3 w-3 text-blue-300" /> : <Check className="h-3 w-3" />)}
-                </div>
+                {msg.content}
               </div>
             </div>
           );
         })}
 
-        {/* Wskaźnik pisania partnera */}
+        {/* WIZUALNY WSKAŹNIK PISANIA */}
         {isPartnerTyping && (
-          <div className="flex justify-start animate-in fade-in">
-            <div className="bg-background border p-2 rounded-2xl rounded-bl-none shadow-sm">
-              <MoreHorizontal className="h-4 w-4 text-muted-foreground animate-bounce" />
+          <div className="flex justify-start animate-in fade-in slide-in-from-left-2">
+            <div className="bg-white border p-2 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-2">
+              <span className="text-[10px] text-gray-400 italic">Pisze</span>
+              <div className="flex gap-1">
+                <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-4 border-t bg-background/80 flex gap-2 items-center">
+      {/* INPUT I PRZYCISK */}
+      <div className="p-4 border-t bg-white flex gap-2">
         <Input
           value={inputText}
           onChange={handleInputChange}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Napisz wiadomość..."
-          className="bg-muted/50 border-none h-10 rounded-xl"
+          className="h-10 rounded-xl bg-gray-100/50 border-none focus-visible:ring-1 focus-visible:ring-[#63b38d]"
         />
-        <Button size="icon" onClick={handleSend} disabled={!inputText.trim()} className="rounded-xl h-10 w-10 shrink-0">
-          <Send className="h-4 w-4" />
+        <Button
+          onClick={handleSend}
+          disabled={!inputText.trim()}
+          className="bg-[#63b38d] hover:bg-[#52a27c] rounded-xl w-10 h-10 shrink-0 shadow-lg shadow-[#63b38d]/20 transition-all"
+        >
+          <Send className="h-4 w-4 text-white" />
         </Button>
       </div>
     </div>

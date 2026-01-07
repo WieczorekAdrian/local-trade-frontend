@@ -5,6 +5,7 @@ import type { ChatMessage } from "@/feature/chat/chat.types";
 
 export const useChat = (recipientUsername: string) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isPartnerTyping, setIsPartnerTyping] = useState(false); // Nowy stan
   const stompClient = useRef<Client | null>(null);
 
   const markAsRead = useCallback(async () => {
@@ -17,7 +18,7 @@ export const useChat = (recipientUsername: string) => {
     } catch (err) {
       console.error("Błąd przy oznaczaniu jako przeczytane:", err);
     }
-  }, [recipientUsername]); // Funkcja zależy od odbiorcy
+  }, [recipientUsername]);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -26,7 +27,6 @@ export const useChat = (recipientUsername: string) => {
           withCredentials: true,
         });
         setMessages(response.data);
-
         await markAsRead();
       } catch (err) {
         console.error("Nie udało się pobrać historii:", err);
@@ -38,16 +38,20 @@ export const useChat = (recipientUsername: string) => {
     stompClient.current = new Client({
       brokerURL: import.meta.env.VITE_WS_URL,
       onConnect: () => {
-        console.log("Połączono przez Native WebSocket!");
+        // 1. Subskrypcja wiadomości
         stompClient.current?.subscribe("/user/queue/messages", (message) => {
           const receivedMsg: ChatMessage = JSON.parse(message.body);
           setMessages((prev) => [...prev, receivedMsg]);
-
           markAsRead();
         });
-      },
-      onStompError: (frame) => {
-        console.error("Błąd STOMP:", frame.headers["message"]);
+
+        // 2. Subskrypcja statusu pisania
+        stompClient.current?.subscribe("/user/queue/typing", (message) => {
+          const data = JSON.parse(message.body);
+          if (data.sender === recipientUsername) {
+            setIsPartnerTyping(data.isTyping);
+          }
+        });
       },
     });
 
@@ -67,5 +71,15 @@ export const useChat = (recipientUsername: string) => {
     }
   };
 
-  return { messages, sendMessage };
+  // Funkcja wysyłająca informację "ja piszę"
+  const sendTypingStatus = (isTyping: boolean) => {
+    if (stompClient.current?.connected) {
+      stompClient.current.publish({
+        destination: `/app/chat.typing/${recipientUsername}`,
+        body: JSON.stringify({ isTyping }),
+      });
+    }
+  };
+
+  return { messages, isPartnerTyping, sendMessage, sendTypingStatus };
 };

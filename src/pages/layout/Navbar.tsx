@@ -83,6 +83,7 @@ export function Navbar() {
 
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
+                    <Link to="/profile"></Link>
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">Moje konto</p>
                       <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>

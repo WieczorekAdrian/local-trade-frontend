@@ -7,7 +7,8 @@ import type {
 } from "./advertisement.types";
 
 export const getAllAds = async (params?: AdSearchParams) => {
-  const response = await api.get("/advertisements/search", { params });
+  const query = { active: true, ...params };
+  const response = await api.get("/advertisements/search", { params: query });
   return response.data.content;
 };
 

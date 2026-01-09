@@ -1,9 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/auth.context";
-import { Plus, Heart, User, LogOut } from "lucide-react";
+import { Plus, Heart, User, LogOut, MessageSquare, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { useAdvertisement } from "@/feature/advertisement/hooks/advertisement.hooks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -25,6 +33,7 @@ export function Navbar() {
         <div className="flex gap-4 items-center">
           {user ? (
             <>
+              {/* OBSERWOWANE */}
               <Link
                 to="/favorites"
                 className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-lg transition-all group"
@@ -44,35 +53,68 @@ export function Navbar() {
                   )}
                 </div>
                 <span
-                  className={`text-sm font-semibold ${favoriteIds.size > 0 ? "text-primary" : "text-muted-foreground"}`}
+                  className={`hidden md:inline text-sm font-semibold ${favoriteIds.size > 0 ? "text-primary" : "text-muted-foreground"}`}
                 >
                   Obserwowane
                 </span>
               </Link>
 
-              <Link to="/add-offer">
+              {/* DODAJ OGŁOSZENIE */}
+              <Link to="/add-offer" className="mr-2">
                 <Button className="gap-2 font-bold" variant="default">
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Dodaj ogłoszenie</span>
                 </Button>
               </Link>
 
-              <div className="hidden lg:flex flex-col items-end mr-2">
-                <span className="text-sm font-medium leading-none">{user.email}</span>
-                <span className="text-xs text-muted-foreground">
-                  Ocena: {user.stats.rating ? user.stats.rating.toFixed(1) : "Brak"} ({user.stats.count})
-                </span>
-              </div>
+              {/* USER DROPDOWN MENU */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2 pl-2 pr-3">
+                    <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex flex-col items-start text-left hidden md:flex">
+                      <span className="text-sm font-semibold leading-none max-w-[150px] truncate">{user.email}</span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              <Button variant="ghost" size="sm" className="gap-2">
-                <User className="h-4 w-4" />
-                <span className="hidden xl:inline">Mój profil</span>
-              </Button>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">Moje konto</p>
+                      <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
 
-              <Button variant="outline" size="sm" onClick={handleLogoutButton} className="gap-2">
-                <LogOut className="h-4 w-4" />
-                <span className="hidden xl:inline">Wyloguj</span>
-              </Button>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="cursor-pointer w-full flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Mój profil</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link to="/chats" className="cursor-pointer w-full flex items-center">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      <span>Moje czaty</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleLogoutButton}
+                    className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-950/20"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Wyloguj</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>

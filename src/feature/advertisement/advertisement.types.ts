@@ -41,3 +41,11 @@ export interface Advertisement {
 export interface FavoriteAdvertisementDto {
   advertisementId: string;
 }
+export interface AdSearchParams {
+  title?: string;
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  categoryId?: number;
+  active?: boolean;
+}

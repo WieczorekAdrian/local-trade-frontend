@@ -54,7 +54,8 @@ export default function AddAdvertisementPage() {
 
   const onSubmit = async (data: AddAdvertisementFormValues) => {
     try {
-      await createAdvertisement(data, selectedFiles);
+      const finalData = { ...data, active: true };
+      await createAdvertisement(finalData, selectedFiles);
 
       toast.success("Ogłoszenie dodane pomyślnie!");
       navigate("/");

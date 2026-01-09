@@ -1,10 +1,17 @@
 import { api } from "@/auth/axiosConfig";
-import type { CreateAdvertisementRequest, AdvertisementResponse, Advertisement } from "./advertisement.types";
+import type {
+  CreateAdvertisementRequest,
+  AdvertisementResponse,
+  Advertisement,
+  AdSearchParams,
+} from "./advertisement.types";
 
-export const getAllAds = async () => {
-  const response = await api.get("/advertisements/search");
+export const getAllAds = async (params?: AdSearchParams) => {
+  const query = { active: true, ...params };
+  const response = await api.get("/advertisements/search", { params: query });
   return response.data.content;
 };
+
 export const formatDate = (dateString: string | undefined) => {
   if (!dateString) return "Brak daty";
   return new Date(dateString).toLocaleDateString("pl-PL", {

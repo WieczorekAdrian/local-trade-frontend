@@ -10,6 +10,8 @@ import SingleAdPage from "@/pages/SingleAdPage";
 import { AdvertisementProvider } from "@/feature/advertisement/AdvertisementContext";
 import { FavoritesPage } from "@/pages/FavoritesPage";
 import { Navbar } from "@/pages/layout/Navbar";
+import SearchPage from "@/pages/SearchPage";
+import ProfilePage from "@/pages/ProfilePage";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/advertisement/:id" element={<SingleAdPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route element={<PrivateRoute />}>
               <Route path="/add-offer" element={<AddAdvertisementPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />

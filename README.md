@@ -5,7 +5,9 @@ This repository contains the client-side application for **"Local Trade"** – a
 ## Tech Stack
 
 * **Core:** React (Vite), TypeScript
+* **UI Components:** **shadcn/ui** (Radix UI primitives)
 * **Styling:** Tailwind CSS, Lucide React (Icons)
+* **Forms & Validation:** **React Hook Form** + **Zod** (Type-safe schema validation)
 * **Media UI:** `yet-another-react-lightbox` (Full-screen preview)
 * **State Management:** React Context API (Global State)
 * **HTTP Client:** Axios (with secure Interceptors)
@@ -22,10 +24,22 @@ The application implements a secure and optimized system for product image manag
 * **HttpOnly Cookie Auth:** Architected to handle user sessions via secure cookies rather than `localStorage`, significantly reducing the surface for XSS attacks.
 * **Session Persistence:** Includes an automatic session verification hook that synchronizes the application state with the backend on every initialization.
 
-### 3. Clean Architecture & Scalability
+### 3. Real-time Communication & Search
+* **WebSocket Chat:** Implements bi-directional communication for real-time messaging between users.
+* **Message History:** Features a persistent chat history, allowing users to view past conversations seamlessly.
+* **Dynamic Discovery:** Advanced search functionality with category-specific filtering and optimized pagination.
+
+### 4. User Ecosystem & Dashboard
+* **Personalized Profile:** A dedicated user area for managing active listings and personal account settings.
+
+### 5. Clean Architecture & Scalability
 * **Separation of Concerns:** The codebase strictly separates business logic (found in `services/`) from UI components, following the Smart vs. Dumb component pattern.
-* **Full Type Safety:** Comprehensive TypeScript implementation ensures that API responses and internal data structures are strictly typed, minimizing runtime exceptions.
-* **Atomic UI Components:** Built using modern styling practices for a responsive and consistent user interface.
+* **Full-stack Type Safety:** Comprehensive TypeScript implementation combined with **Zod** schema validation ensures that API responses and user inputs are strictly typed.
+* **Atomic UI Components:** Built using **shadcn/ui** for a responsive, accessible, and consistent user interface.
+
+### 6. Enhanced User Experience (Optimistic UI)
+* **Instant Feedback:** Implements **Optimistic UI** patterns for high-frequency actions like "Add to Favorites" and "Real-time Messaging".
+* **State Rollback:** Features robust error handling that automatically reverts the UI state in case of server-side failures, ensuring data consistency and a fluid user experience.
 
 ## Getting Started
 

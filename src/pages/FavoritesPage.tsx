@@ -1,5 +1,5 @@
 import { useAdvertisement } from "@/feature/advertisement/hooks/advertisement.hooks";
-import { AdCard } from "@/feature/advertisement/AdCard";
+import { AdCard } from "@/feature/advertisement/components/AdCard";
 import { HeartOff } from "lucide-react";
 
 export function FavoritesPage() {

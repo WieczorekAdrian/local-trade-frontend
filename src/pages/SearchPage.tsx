@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllAds } from "@/feature/advertisement/ad.service";
-import { AdCard } from "@/feature/advertisement/AdCard";
+import { AdCard } from "@/feature/advertisement/components/AdCard";
 import type { Advertisement } from "@/feature/advertisement/advertisement.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

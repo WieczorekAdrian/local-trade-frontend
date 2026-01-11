@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { getAdById, formatDate } from "@/feature/advertisement/ad.service";
-import { FavoriteButton } from "@/feature/advertisement/components/FavoriteButton";
+import { FavoriteButton } from "@/components/common/FavoriteButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

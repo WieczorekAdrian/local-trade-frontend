@@ -16,21 +16,28 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-
-const CATEGORIES = [
-  { id: "1", name: "Elektronika" },
-  { id: "2", name: "Moda" },
-  { id: "3", name: "Motoryzacja" },
-  { id: "4", name: "Dom i Ogród" },
-  { id: "5", name: "Sport" },
-];
+import { useEffect, useState } from "react";
+import { getCategories } from "@/feature/category/category.service";
+import type { Category } from "@/feature/category/category.types";
 
 export default function AddAdvertisementPage() {
   const navigate = useNavigate();
-
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        toast.error("Error getting categories.");
+        throw error;
+      }
+    };
+    void fetchCategories();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -132,15 +139,15 @@ export default function AddAdvertisementPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Kategoria</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                    <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : ""}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Wybierz kategorię" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {CATEGORIES.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id.toString()}>
                             {cat.name}
                           </SelectItem>
                         ))}
@@ -150,7 +157,6 @@ export default function AddAdvertisementPage() {
                   </FormItem>
                 )}
               />
-              {/* SEKCJA ZDJĘĆ */}
               {/* SEKCJA ZDJĘĆ */}
               <div className="space-y-4 py-4">
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">

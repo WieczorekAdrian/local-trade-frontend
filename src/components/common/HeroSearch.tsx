@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
 import { useNavigate, createSearchParams } from "react-router-dom";
+import { RotatingText } from "@/components/common/RotatingText";
 
 export function HeroSearch() {
   const [title, setTitle] = useState("");
@@ -30,11 +31,13 @@ export function HeroSearch() {
   return (
     <div className="bg-muted/30 py-16 border-b">
       <div className="container mx-auto px-4 flex flex-col items-center text-center space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-primary">
-            Kupuj i sprzedawaj lokalnie
+        <div className="space-y-2 flex flex-col items-center">
+          {" "}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground flex flex-col md:flex-row gap-0 md:gap-2 items-center justify-center">
+            <span>Kupuj i sprzedawaj</span>
+            <RotatingText />
           </h1>
-          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto pt-2">
             Znajdź najlepsze okazje w Twojej okolicy.
           </p>
         </div>

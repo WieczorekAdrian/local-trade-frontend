@@ -1,16 +1,11 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import type { Advertisement, FavoriteAdvertisementDto } from "@/feature/advertisement/advertisement.types";
-import {
-  getAllAds,
-  getMyFavorites, // Nowa funkcja (pobiera Set/Tablicę z /favorite/me)
-  addToFavorite, // Nowa funkcja (POST /favorite/{id})
-  removeFromFavorite, // Nowa funkcja (DELETE /favorite/{id})
-} from "@/feature/advertisement/ad.service";
-import { useAuth } from "@/auth/auth.context"; // Zakładam, że tu masz info o userze
+import { getAllAds, getMyFavorites, addToFavorite, removeFromFavorite } from "@/feature/advertisement/ad.service";
+import { useAuth } from "@/auth/auth.context";
 
 interface AdvertisementContextType {
   ads: Advertisement[];
-  favoriteIds: Set<string>; // Trzymamy same ID polubionych
+  favoriteIds: Set<string>;
   toggleFavorite: (id: string) => Promise<void>;
   loading: boolean;
   refreshAds: () => void;

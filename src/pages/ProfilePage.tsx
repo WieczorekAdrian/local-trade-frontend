@@ -24,7 +24,7 @@ export default function ProfilePage() {
       }
     };
 
-    fetchUser();
+    void fetchUser();
   }, []);
 
   if (loading) {

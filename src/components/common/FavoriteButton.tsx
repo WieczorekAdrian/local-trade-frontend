@@ -1,12 +1,10 @@
 import { Heart } from "lucide-react";
-import { useAdvertisement } from "../hooks/advertisement.hooks";
+import { useAdvertisement } from "@/feature/advertisement/hooks/advertisement.hooks";
 import { useAuth } from "@/auth/auth.context";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const FavoriteButton = ({ adId }: { adId: string }) => {
-  // 1. Usuwamy isFavorite z propsów
-  // 2. Wyciągamy favoriteIds z Twojego nowego "zmodowanego" Contextu
   const { toggleFavorite, favoriteIds } = useAdvertisement();
   const { user } = useAuth();
 

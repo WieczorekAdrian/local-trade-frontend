@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
 import { useNavigate, createSearchParams } from "react-router-dom";
 import { RotatingText } from "@/components/common/RotatingText";
+import { CityAutocomplete } from "@/components/common/CityAutocomplete";
+import * as React from "react";
 
 export function HeroSearch() {
   const [title, setTitle] = useState("");
@@ -31,8 +33,8 @@ export function HeroSearch() {
   return (
     <div className="bg-muted/30 py-16 border-b">
       <div className="container mx-auto px-4 flex flex-col items-center text-center space-y-6">
+        {/* Nagłówek */}
         <div className="space-y-2 flex flex-col items-center">
-          {" "}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground flex flex-col md:flex-row gap-0 md:gap-2 items-center justify-center">
             <span>Kupuj i sprzedawaj</span>
             <RotatingText />
@@ -42,7 +44,8 @@ export function HeroSearch() {
           </p>
         </div>
 
-        <div className="w-full max-w-3xl bg-background p-2 rounded-xl shadow-lg border flex flex-col sm:flex-row gap-2 items-center">
+        {/* Pasek wyszukiwania */}
+        <div className="w-full max-w-3xl bg-background p-2 rounded-xl shadow-lg border flex flex-col sm:flex-row gap-2 items-center relative z-20">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
@@ -56,16 +59,14 @@ export function HeroSearch() {
 
           <div className="hidden sm:block h-8 w-[1px] bg-border mx-2"></div>
 
-          <div className="relative flex-1 w-full sm:w-[30%]">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Miasto"
-              className="pl-10 border-0 shadow-none focus-visible:ring-0 text-md h-12"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
+          {/* --- NAPRAWA TUTAJ --- */}
+          <CityAutocomplete
+            value={location}
+            onChange={setLocation}
+            onKeyDown={handleKeyDown}
+            className="flex-1 w-full sm:w-[30%]"
+            inputClassName="border-0 shadow-none focus-visible:ring-0 text-md h-12 bg-transparent"
+          />
 
           <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-md font-bold rounded-lg" onClick={handleSearch}>
             Szukaj

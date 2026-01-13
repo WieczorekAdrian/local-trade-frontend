@@ -16,8 +16,7 @@ import {
   ImageOff,
   ChevronLeft,
   ChevronRight,
-  Maximize2,
-  X, // Dodany import ikony zamknięcia
+  Maximize2, // Dodany import ikony zamknięcia
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/auth.context";
@@ -243,18 +242,13 @@ export default function SingleAdPage() {
         />
       )}
 
-      {/* OKNO CZATU - Pływające w rogu ekranu */}
       {isChatOpen && ad && (
         <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-10 duration-300">
-          <div className="relative">
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1.5 shadow-xl hover:scale-110 transition-transform z-[110]"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <ChatWindow recipientUsername={ad.sellerEmail || "Użytkownik"} />
-          </div>
+          <ChatWindow
+            recipientUsername={ad.sellerEmail || "Użytkownik"}
+            variant="bubble" // <- To aktywuje tryb dymka
+            onClose={() => setIsChatOpen(false)} // <- To podpina wewnętrzny przycisk "X"
+          />
         </div>
       )}
     </>

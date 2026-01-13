@@ -29,7 +29,6 @@ export default function SearchPage() {
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
   const [categoryId, setCategoryId] = useState(searchParams.get("categoryId") || "");
 
-  // Aktualizacja ogłoszeń, gdy zmieni się URL
   useEffect(() => {
     const fetchAds = async () => {
       setIsLoading(true);

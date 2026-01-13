@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const words = ["lokalnie", "wygodnie", "sprawnie", "korzystnie", "bezpiecznie"];
+const words = ["bezpiecznie", "korzystnie", "nowocześnie"];
 
 export const RotatingText = () => {
   const [index, setIndex] = useState(0);

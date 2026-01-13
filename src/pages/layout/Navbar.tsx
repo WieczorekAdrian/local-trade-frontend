@@ -23,7 +23,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="border-b bg-card px-6 py-4 mb-8 sticky top-0 z-50 shadow-sm">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 px-6 py-4 shadow-sm">
       <div className="container mx-auto flex justify-between items-center">
         {/* LOGO */}
         <Link to="/" className="text-2xl font-bold text-primary tracking-tighter">
@@ -36,7 +36,7 @@ export function Navbar() {
               {/* OBSERWOWANE */}
               <Link
                 to="/favorites"
-                className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-lg transition-all group"
+                className="flex items-center gap-2 px-3 py-2 hover:bg-muted/80 rounded-lg transition-all group"
               >
                 <div className="relative">
                   <Heart
@@ -61,7 +61,7 @@ export function Navbar() {
 
               {/* DODAJ OGŁOSZENIE */}
               <Link to="/add-offer" className="mr-2">
-                <Button className="gap-2 font-bold" variant="default">
+                <Button className="gap-2 font-bold shadow-sm" variant="default">
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Dodaj ogłoszenie</span>
                 </Button>
@@ -70,8 +70,8 @@ export function Navbar() {
               {/* USER DROPDOWN MENU */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 pl-2 pr-3">
-                    <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Button variant="ghost" className="flex items-center gap-2 pl-2 pr-3 hover:bg-muted/80">
+                    <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
                       <User className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex flex-col items-start text-left hidden md:flex">
@@ -83,7 +83,6 @@ export function Navbar() {
 
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
-                    <Link to="/profile"></Link>
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">Moje konto</p>
                       <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>

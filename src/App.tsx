@@ -12,6 +12,7 @@ import { FavoritesPage } from "@/pages/FavoritesPage";
 import { Navbar } from "@/pages/layout/Navbar";
 import SearchPage from "@/pages/SearchPage";
 import ProfilePage from "@/pages/ProfilePage";
+import ChatsPage from "@/pages/ChatsPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <AdvertisementProvider>
           <Navbar />
           <Routes>
+            <Route path="/chats" element={<ChatsPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/advertisement/:id" element={<SingleAdPage />} />
             <Route path="/search" element={<SearchPage />} />

@@ -53,3 +53,53 @@ test.describe("Strona Logowania", () => {
     await expect(page).toHaveURL("/signup");
   });
 });
+
+test("Nie powinien wysłać formularza z pustymi polami", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+
+  await loginPage.loginButton.click();
+
+  await expect(page).toHaveURL("/login");
+
+  const emailInput = page.getByLabel("Email");
+  const isInvalid = await emailInput.evaluate((node: HTMLInputElement) => node.validity.valueMissing);
+  expect(isInvalid).toBeTruthy();
+});
+
+test("Powinien przekierować na login przy wygasłej sesji (401)", async ({ page }) => {
+  await page.route("**/auth/login", (route) => route.fulfill({ status: 401 }));
+  await page.route("**/auth/refreshToken", (route) => route.fulfill({ status: 401 }));
+
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login("test@test.com", "złe-hasło");
+
+  await expect(page).toHaveURL(/\/login/);
+});
+
+test("Powinien obsłużyć całkowitą awarię serwera (500)", async ({ page }) => {
+  await page.route("**/auth/login", (route) => route.fulfill({ status: 500 }));
+
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login("test@test.com", "password");
+
+  await expect(page.getByText(/nie udało się połączyć z serwerem/i)).toBeVisible();
+});
+
+test("Przycisk powinien być zablokowany podczas wysyłania żądania", async ({ page }) => {
+  await page.route("**/auth/login", async (route) => {
+    await new Promise((res) => setTimeout(res, 5000));
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+
+  await loginPage.login("test@test.com", "pass");
+
+  const button = page.getByRole("button", { name: /logowanie/i });
+  await expect(button).toBeDisabled();
+  await expect(button).toContainText("Logowanie...");
+});

@@ -12,6 +12,7 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  globalSetup: "./global-setup.ts",
   webServer: {
     command: "npm run dev",
     url: "http://localhost:5173",
@@ -33,6 +34,7 @@ export default defineConfig({
     baseURL: "http://localhost:5173",
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+    storageState: "storageState.json",
   },
 
   /* Configure projects for major browsers */

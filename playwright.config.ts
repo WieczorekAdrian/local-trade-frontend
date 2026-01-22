@@ -1,20 +1,15 @@
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  globalSetup: process.env.CI ? undefined : "./global-setup.ts",
-
+  testDir: "./tests",
+  fullyParallel: true,
+  reporter: "html",
   webServer: {
     command: "npm run dev",
     url: "http://localhost:5173",
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
   },
-
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: "html",
-
   use: {
     baseURL: "http://localhost:5173",
     trace: "on-first-retry",
@@ -22,20 +17,34 @@ export default defineConfig({
 
   projects: [
     {
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+    },
+
+    {
       name: "e2e",
       testDir: "./tests/e2e",
+      dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
-        storageState: process.env.CI ? undefined : "storageState.json",
+        storageState: "storageState.json",
       },
     },
 
     {
-      name: "mocked",
+      name: "mocked-chrome",
       testDir: "./tests/mocked",
-      use: {
-        ...devices["Desktop Chrome"],
-      },
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mocked-safari",
+      testDir: "./tests/mocked",
+      use: { ...devices["Desktop Safari"] },
+    },
+    {
+      name: "mocked-mobile",
+      testDir: "./tests/mocked",
+      use: { ...devices["Pixel 7"] },
     },
   ],
 });

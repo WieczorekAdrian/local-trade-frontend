@@ -47,6 +47,13 @@ test.describe("Strona Logowania - Mocked CI", () => {
     await loginPage.goto();
 
     const responsePromise = page.waitForResponse("**/auth/login");
+    page.on("console", (msg) => {
+      if (msg.type() === "error") console.log(`BROWSER_ERROR: ${msg.text()}`);
+    });
+
+    page.on("pageerror", (err) => {
+      console.log(`JS_CRASH_ON_CI: ${err.message}`);
+    });
     await loginPage.login("test@example.com", "password123");
     await responsePromise;
 

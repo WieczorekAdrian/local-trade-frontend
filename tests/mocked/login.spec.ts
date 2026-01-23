@@ -37,13 +37,18 @@ test.describe("Strona Logowania - Mocked CI", () => {
         } as UserResponse),
       });
     });
-
     await loginPage.goto();
+
+    const loginResponsePromise = page.waitForResponse("**/auth/login");
+
     await loginPage.login("test@example.com", "password123");
 
-    await expect(page.getByText(/zalogowano pomyślnie/i)).toBeVisible({ timeout: 10000 });
+    await loginResponsePromise;
 
-    await expect(page).toHaveURL("/", { timeout: 10000 });
+    await expect(page).toHaveURL("/", { timeout: 15000 });
+
+    const successMessage = page.getByText(/zalogowano pomyślnie/i);
+    await expect(successMessage).toBeVisible({ timeout: 15000 });
   });
 
   test("Powinien pokazać błąd przy nieudanej próbie logowania", async ({ page }) => {

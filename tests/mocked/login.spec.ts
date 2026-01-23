@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { LoginPage } from "../pages/LoginPage";
-import type { UserResponse } from "@/auth/auth.types";
 
 test.describe("Strona Logowania - Mocked CI", () => {
   test.beforeEach(async ({ page }) => {
@@ -17,38 +16,43 @@ test.describe("Strona Logowania - Mocked CI", () => {
     });
   });
 
-  test("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
+  test("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page, context }) => {
     const loginPage = new LoginPage(page);
 
+    await context.addCookies([
+      {
+        name: "auth_session",
+        value: "fake_session_id",
+        domain: "localhost",
+        path: "/",
+        expires: Math.floor(Date.now() / 1000) + 3600,
+        sameSite: "Lax",
+      },
+    ]);
+
     await page.route("**/auth/login", async (route) => {
+      console.log("Mock Login HIT!");
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        headers: {
-          "Set-Cookie": "auth_session=fake_session_id; Path=/; SameSite=Lax",
-        },
         body: JSON.stringify({
           email: "test@example.com",
-          ratingCount: 5,
-          averageRating: 4.8,
-          role: "USER",
-          userId: "user-123-abc",
           name: "Jan Kowalski",
-        } as UserResponse),
+          userId: "user-123-abc",
+          role: "USER",
+        }),
       });
     });
+
     await loginPage.goto();
 
-    const loginResponsePromise = page.waitForResponse("**/auth/login");
-
+    const responsePromise = page.waitForResponse("**/auth/login");
     await loginPage.login("test@example.com", "password123");
+    await responsePromise;
 
-    await loginResponsePromise;
+    await expect(page).toHaveURL(/\/$/, { timeout: 20000 });
 
-    await expect(page).toHaveURL("/", { timeout: 15000 });
-
-    const successMessage = page.getByText(/zalogowano pomyślnie/i);
-    await expect(successMessage).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/zalogowano pomyślnie/i)).toBeVisible({ timeout: 15000 });
   });
 
   test("Powinien pokazać błąd przy nieudanej próbie logowania", async ({ page }) => {

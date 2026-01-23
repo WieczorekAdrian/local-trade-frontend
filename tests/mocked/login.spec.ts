@@ -16,50 +16,49 @@ test.describe("Strona Logowania - Mocked CI", () => {
     });
   });
 
-  test("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page, context }) => {
+  test("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
     const loginPage = new LoginPage(page);
 
-    await context.addCookies([
-      {
-        name: "auth_session",
-        value: "fake_session_id",
-        domain: "localhost",
-        path: "/",
-        expires: Math.floor(Date.now() / 1000) + 3600,
-        sameSite: "Lax",
-      },
-    ]);
+    const mockUser = {
+      email: "test@example.com",
+      name: "Jan Kowalski",
+      userId: "user-123-abc",
+      role: "USER",
+      ratingCount: 5,
+      averageRating: 4.8,
+    };
 
     await page.route("**/auth/login", async (route) => {
-      console.log("Mock Login HIT!");
+      console.log(">>> Mock LOGIN HIT!");
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({
-          email: "test@example.com",
-          name: "Jan Kowalski",
-          userId: "user-123-abc",
-          role: "USER",
-        }),
+        headers: { "Set-Cookie": "auth_session=fake_session; Path=/; SameSite=Lax" },
+        body: JSON.stringify(mockUser),
+      });
+    });
+
+    await page.route("**/auth/me", async (route) => {
+      console.log(">>> Mock PROFILE (me) HIT!");
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(mockUser),
       });
     });
 
     await loginPage.goto();
 
-    const responsePromise = page.waitForResponse("**/auth/login");
-    page.on("console", (msg) => {
-      if (msg.type() === "error") console.log(`BROWSER_ERROR: ${msg.text()}`);
-    });
+    const loginPromise = page.waitForResponse("**/auth/login");
 
-    page.on("pageerror", (err) => {
-      console.log(`JS_CRASH_ON_CI: ${err.message}`);
-    });
     await loginPage.login("test@example.com", "password123");
-    await responsePromise;
+    await loginPromise;
 
-    await expect(page).toHaveURL(/\/$/, { timeout: 20000 });
+    console.log("Waiting for redirect...");
+    await page.waitForURL((url) => url.pathname === "/", { timeout: 20000 });
 
-    await expect(page.getByText(/zalogowano pomyślnie/i)).toBeVisible({ timeout: 15000 });
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByText(/zalogowano pomyślnie/i)).toBeVisible();
   });
 
   test("Powinien pokazać błąd przy nieudanej próbie logowania", async ({ page }) => {

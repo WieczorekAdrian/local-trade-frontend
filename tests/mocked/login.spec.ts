@@ -19,31 +19,17 @@ test.describe("Strona Logowania - Mocked CI", () => {
   test.skip("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
     const loginPage = new LoginPage(page);
 
-    const mockUser = {
-      email: "test@example.com",
-      name: "Jan Kowalski",
-      userId: "user-123-abc",
-      role: "USER",
-      ratingCount: 5,
-      averageRating: 4.8,
-    };
-
     await page.route("**/auth/login", async (route) => {
-      console.log(">>> Mock LOGIN HIT!");
+      console.log(">>> Mock LOGIN (Cookies only) HIT!");
       await route.fulfill({
         status: 200,
-        contentType: "application/json",
-        headers: { "Set-Cookie": "auth_session=fake_session; Path=/; SameSite=Lax" },
-        body: JSON.stringify(mockUser),
-      });
-    });
-
-    await page.route("**/auth/me", async (route) => {
-      console.log(">>> Mock PROFILE (me) HIT!");
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(mockUser),
+        headers: {
+          "Set-Cookie": [
+            "accessToken=fake_access_token; HttpOnly; Path=/; Max-Age=900; SameSite=Lax",
+            "refreshToken=fake_refresh_token; HttpOnly; Path=/auth/refreshToken; Max-Age=604800; SameSite=Lax",
+          ].join(", "),
+        },
+        body: "",
       });
     });
 

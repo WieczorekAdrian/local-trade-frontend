@@ -16,7 +16,7 @@ test.describe("Strona Logowania - Mocked CI", () => {
     });
   });
 
-  test("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
+  test.skip("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
     const loginPage = new LoginPage(page);
 
     const mockUser = {

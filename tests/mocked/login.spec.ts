@@ -16,11 +16,10 @@ test.describe("Strona Logowania - Mocked CI", () => {
     });
   });
 
-  test.skip("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
+  test("Powinien pomyślnie zalogować użytkownika i przekierować na stronę główną", async ({ page }) => {
     const loginPage = new LoginPage(page);
 
     await page.route("**/auth/login", async (route) => {
-      console.log(">>> Mock LOGIN (Cookies only) HIT!");
       await route.fulfill({
         status: 200,
         headers: {

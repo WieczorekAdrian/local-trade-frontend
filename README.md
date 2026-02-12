@@ -1,5 +1,5 @@
 # Local Trade - Frontend Client
-![Playwright Tests](https://img.shields.io/github/actions/workflow/status/WieczorekAdrian/local-trade-frontend/main.yml?branch=main&label=E2E%20Tests&style=flat-square)
+![Playwright Tests](https://img.shields.io/github/actions/workflow/status/WieczorekAdrian/local-trade-frontend/playwright.yml?branch=main&label=E2E%20Tests&style=flat-square)
 
 This repository contains the client-side application for **"Local Trade"** – a modern, high-performance marketplace platform. The project is built with a focus on clean architecture, type safety, and professional media handling.
 

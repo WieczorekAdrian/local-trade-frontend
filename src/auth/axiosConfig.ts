@@ -59,7 +59,13 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/auth/refreshToken");
+        await axios.post(
+          `${API_URL}/auth/refreshToken`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
 
         processQueue(null);
 

@@ -6,8 +6,10 @@ import { type UserDashboardDto } from "@/feature/user/user.types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [user, setUser] = useState<UserDashboardDto | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,13 +21,14 @@ export default function ProfilePage() {
       } catch (error) {
         console.error(error);
         toast.error("Nie udało się pobrać danych profilu.");
+        navigate("/login");
       } finally {
         setLoading(false);
       }
     };
 
     void fetchUser();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (

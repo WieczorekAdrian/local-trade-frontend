@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://local-trade.francecentral.cloudapp.azure.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }

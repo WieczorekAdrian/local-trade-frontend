@@ -74,7 +74,6 @@ api.interceptors.response.use(
         processQueue(refreshError instanceof Error ? refreshError : new Error("Refresh failed"), null);
 
         localStorage.removeItem("user");
-        window.location.href = "/login";
 
         return Promise.reject(refreshError);
       } finally {

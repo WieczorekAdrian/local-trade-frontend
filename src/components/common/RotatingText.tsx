@@ -14,15 +14,15 @@ export const RotatingText = () => {
   }, []);
 
   return (
-    <span className="inline-flex h-[1.2em] relative overflow-hidden w-[290px] justify-start text-left ml-2 md:ml-0">
-      <AnimatePresence mode="wait">
+    <span className="inline-flex items-center h-[1.5em] relative overflow-hidden w-[290px] justify-start text-left ml-1 md:ml-0 align-bottom">
+      <AnimatePresence>
         <motion.span
           key={words[index]}
           initial={{ y: "100%", opacity: 0 }}
           animate={{ y: "0%", opacity: 1 }}
           exit={{ y: "-100%", opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="absolute left-0 top-[6px] text-primary font-bold whitespace-nowrap"
+          className="absolute left-0 text-primary font-bold whitespace-nowrap"
         >
           {words[index]}
         </motion.span>

@@ -48,7 +48,7 @@ export const AdvertisementProvider = ({ children }: { children: ReactNode }) => 
   useEffect(() => {
     fetchAds();
     fetchFavorites();
-  }, [user]);
+  }, [fetchFavorites, user]);
 
   const toggleFavorite = async (id: string) => {
     if (!user) {

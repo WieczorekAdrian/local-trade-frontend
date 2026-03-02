@@ -41,7 +41,6 @@ export const useChat = (recipientUsername: string) => {
       fetchHistory();
     }
 
-    // Cleanup state on unmount or recipient change
     return () => {
       isMounted = false;
       setMessages([]);
@@ -52,46 +51,67 @@ export const useChat = (recipientUsername: string) => {
   useEffect(() => {
     if (!recipientUsername) return;
 
-    if (stompClient.current) {
-      stompClient.current.deactivate();
-    }
+    let isActive = true;
 
-    const client = new Client({
-      brokerURL: import.meta.env.VITE_WS_URL,
-      reconnectDelay: 5000,
-      onConnect: () => {
-        client.subscribe("/user/queue/messages", (message) => {
-          const receivedMsg: ChatMessage = JSON.parse(message.body);
-          setMessages((prev) => {
-            const exists = prev.some((m) => m.content === receivedMsg.content && m.timestamp === receivedMsg.timestamp);
-            return exists ? prev : [...prev, receivedMsg];
-          });
-          markAsRead();
+    const connectWebSocket = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/auth/ws-ticket`, {
+          withCredentials: true,
         });
 
-        // B. Subscribe to typing status
-        client.subscribe("/user/queue/typing", (message) => {
-          const data = JSON.parse(message.body);
+        const ticket = response.data.ticket;
 
-          // Handle potential field naming discrepancies (isTyping vs typing)
-          const typingStatus = data.isTyping !== undefined ? data.isTyping : data.typing;
+        if (!isActive) return;
 
-          const sender = (data.sender || "").toString().toLowerCase().trim();
-          const currentRecipient = recipientUsername.toString().toLowerCase().trim();
+        if (stompClient.current) {
+          stompClient.current.deactivate();
+        }
 
-          if (sender === currentRecipient) {
-            setIsPartnerTyping(!!typingStatus);
-          }
+        const client = new Client({
+          brokerURL: import.meta.env.VITE_WS_URL,
+          reconnectDelay: 5000,
+          connectHeaders: {
+            "ws-ticket": ticket,
+          },
+          onConnect: () => {
+            client.subscribe("/user/queue/messages", (message) => {
+              const receivedMsg: ChatMessage = JSON.parse(message.body);
+              setMessages((prev) => {
+                const exists = prev.some(
+                  (m) => m.content === receivedMsg.content && m.timestamp === receivedMsg.timestamp,
+                );
+                return exists ? prev : [...prev, receivedMsg];
+              });
+              markAsRead();
+            });
+
+            // Subskrypcja statusu pisania
+            client.subscribe("/user/queue/typing", (message) => {
+              const data = JSON.parse(message.body);
+              const typingStatus = data.isTyping !== undefined ? data.isTyping : data.typing;
+              const sender = (data.sender || "").toString().toLowerCase().trim();
+              const currentRecipient = recipientUsername.toString().toLowerCase().trim();
+
+              if (sender === currentRecipient) {
+                setIsPartnerTyping(!!typingStatus);
+              }
+            });
+          },
         });
-      },
-    });
 
-    client.activate();
-    stompClient.current = client;
+        client.activate();
+        stompClient.current = client;
+      } catch (error) {
+        console.error("Nie udało się pobrać biletu lub połączyć z WebSocketem:", error);
+      }
+    };
+
+    connectWebSocket();
 
     return () => {
-      if (client) {
-        client.deactivate();
+      isActive = false;
+      if (stompClient.current) {
+        stompClient.current.deactivate();
       }
       setIsPartnerTyping(false);
     };

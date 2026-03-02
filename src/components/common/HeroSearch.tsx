@@ -59,7 +59,6 @@ export function HeroSearch() {
 
           <div className="hidden sm:block h-8 w-[1px] bg-border mx-2"></div>
 
-          {/* --- NAPRAWA TUTAJ --- */}
           <CityAutocomplete
             value={location}
             onChange={setLocation}

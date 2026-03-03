@@ -2,16 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import { useChat } from "@/feature/chat/hooks/useChat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, MoreVertical, X } from "lucide-react"; // Dodajemy X
+import { Send, MoreVertical, X, Check, CheckCheck } from "lucide-react";
 import { useAuth } from "@/auth/auth.context";
 import type { ChatWindowProps } from "@/feature/chat/chat.types";
 import { cn } from "@/lib/utils";
 
-export function ChatWindow({
-  recipientUsername,
-  variant = "page", // Domyślnie tryb pełnoekranowy
-  onClose,
-}: ChatWindowProps) {
+export function ChatWindow({ recipientUsername, variant = "page", onClose }: ChatWindowProps) {
   const { messages, isPartnerTyping, sendMessage, sendTypingStatus } = useChat(recipientUsername);
   const { user } = useAuth();
   const [inputText, setInputText] = useState("");
@@ -40,22 +36,17 @@ export function ChatWindow({
     const newValue = e.target.value;
     setInputText(newValue);
 
-    if (newValue.trim() === "") {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = null;
-      }
-      sendTypingStatus(false);
-      return;
-    }
-
     if (!typingTimeoutRef.current) {
+      console.log("WYSYŁAM TRUE");
       sendTypingStatus(true);
     }
 
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
 
     typingTimeoutRef.current = setTimeout(() => {
+      console.log("WYSYŁAM FALSE (po 2s)");
       sendTypingStatus(false);
       typingTimeoutRef.current = null;
     }, 2000);
@@ -64,12 +55,13 @@ export function ChatWindow({
   const handleSend = () => {
     if (inputText.trim()) {
       sendMessage(inputText);
-      sendTypingStatus(false);
+      setInputText("");
+
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = null;
       }
-      setInputText("");
+      sendTypingStatus(false);
     }
   };
 
@@ -77,13 +69,9 @@ export function ChatWindow({
     <div
       className={cn(
         "flex flex-col bg-white font-sans overflow-hidden transition-all",
-        // LOGIKA WARIANTU:
-        isBubble
-          ? "w-[360px] h-[500px] border rounded-xl shadow-2xl absolute right-0 bottom-0 z-50" // Styl dymka
-          : "w-full h-full", // Styl strony
+        isBubble ? "w-[360px] h-[500px] border rounded-xl shadow-2xl absolute right-0 bottom-0 z-50" : "w-full h-full",
       )}
     >
-      {/* NAGŁÓWEK */}
       <div
         className={cn(
           "flex items-center justify-between px-4 bg-white shrink-0 sticky top-0 z-10 border-b",
@@ -104,15 +92,12 @@ export function ChatWindow({
             {isPartnerTyping ? (
               <span className="text-[10px] text-[#63b38d] font-medium animate-pulse block leading-none">Pisze...</span>
             ) : (
-              // W trybie bubble oszczędzamy miejsce, w page dajemy "Dostępny"
               !isBubble && <span className="text-xs text-gray-400">Dostępny</span>
             )}
           </div>
         </div>
 
-        {/* PRZYCISKI NAGŁÓWKA */}
         {isBubble ? (
-          // W trybie Bubble pokazujemy KRZYŻYK
           <Button
             variant="ghost"
             size="icon"
@@ -122,7 +107,6 @@ export function ChatWindow({
             <X className="h-5 w-5" />
           </Button>
         ) : (
-          // W trybie Page pokazujemy OPCJE
           <Button
             variant="ghost"
             size="icon"
@@ -133,7 +117,6 @@ export function ChatWindow({
         )}
       </div>
 
-      {/* LISTA WIADOMOŚCI */}
       <div
         ref={scrollRef}
         className={cn("flex-1 overflow-y-auto bg-[#Fdfdfd] scroll-smooth", isBubble ? "p-3" : "p-6")}
@@ -149,17 +132,16 @@ export function ChatWindow({
               className={cn(
                 "flex w-full animate-in fade-in slide-in-from-bottom-1 duration-200",
                 isMe ? "justify-end" : "justify-start",
-                isLastInSequence ? "mb-3" : "mb-1", // Mniejszy odstęp w dymku
+                isLastInSequence ? "mb-3" : "mb-1",
               )}
             >
               <div
                 className={cn(
-                  "px-3 py-2 text-[14px] leading-relaxed break-words shadow-sm relative group transition-all",
-                  isBubble ? "max-w-[85%]" : "max-w-[70%]", // W dymku wiadomości mogą być szersze
+                  "px-3 py-2 text-[14px] leading-relaxed break-words shadow-sm relative group transition-all flex flex-col",
+                  isBubble ? "max-w-[85%]" : "max-w-[70%]",
                   isMe
                     ? "bg-[#63b38d] text-white rounded-2xl"
                     : "bg-white border border-gray-100 text-gray-800 rounded-2xl",
-
                   isSequence && isMe && "rounded-tr-sm",
                   isSequence && !isMe && "rounded-tl-sm",
                   !isLastInSequence && isMe && "rounded-br-sm",
@@ -168,7 +150,22 @@ export function ChatWindow({
                   isLastInSequence && !isMe && "rounded-bl-2xl",
                 )}
               >
-                {msg.content}
+                <span>{msg.content}</span>
+
+                {isMe && (
+                  <div
+                    className={cn(
+                      "self-end flex items-center gap-1 text-[10px] mt-0.5",
+                      msg.isRead ? "text-white font-medium" : "text-white/70",
+                    )}
+                  >
+                    {msg.isRead ? (
+                      <CheckCheck className="w-[14px] h-[14px]" />
+                    ) : (
+                      <Check className="w-[14px] h-[14px]" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -185,7 +182,6 @@ export function ChatWindow({
         )}
       </div>
 
-      {/* INPUT */}
       <div className={cn("bg-white border-t shrink-0", isBubble ? "p-3" : "p-4")}>
         <div className="flex items-center gap-2 bg-gray-50/50 p-1 rounded-3xl border border-gray-200 focus-within:border-[#63b38d] focus-within:ring-1 focus-within:ring-[#63b38d]/30 transition-all shadow-sm">
           <Input

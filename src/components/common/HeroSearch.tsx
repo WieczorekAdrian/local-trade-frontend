@@ -34,13 +34,17 @@ export function HeroSearch() {
     <div className="bg-muted/30 py-16 border-b">
       <div className="container mx-auto px-4 flex flex-col items-center text-center space-y-6">
         {/* Nagłówek */}
-        <div className="space-y-2 flex flex-col items-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground flex flex-col md:flex-row gap-0 md:gap-2 items-center justify-center">
-            <span>Kupuj i sprzedawaj</span>
-            <RotatingText />
+        <div className="space-y-3 flex flex-col items-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground flex flex-col md:flex-row md:gap-4 items-center justify-center">
+            <span className="text-right">Kupuj i sprzedawaj</span>
+            {/* Wrapper z minimalną szerokością - zatrzymuje skakanie tekstu */}
+            <span className="min-w-[180px] md:min-w-[280px] text-left block">
+              <RotatingText />
+            </span>
           </h1>
-          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto pt-2">
-            Znajdź najlepsze okazje w Twojej okolicy.
+          {/* Twarda spacja (&nbsp;) zapobiega zostawieniu "w" na końcu linijki */}
+          <p className="text-muted-foreground text-center text-lg sm:text-xl max-w-2xl mx-auto pt-2">
+            Znajdź najlepsze okazje w&nbsp;Twojej okolicy.
           </p>
         </div>
 

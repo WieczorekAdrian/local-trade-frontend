@@ -85,7 +85,16 @@ export const useChat = (recipientUsername: string) => {
               markAsRead();
             });
 
-            // Subskrypcja statusu pisania
+            client.subscribe("/user/queue/read-receipts", (message) => {
+              const readerEmail = message.body;
+
+              if (readerEmail === recipientUsername) {
+                setMessages((prevMessages) =>
+                  prevMessages.map((msg) => (msg.recipient === readerEmail ? { ...msg, isRead: true } : msg)),
+                );
+              }
+            });
+
             client.subscribe("/user/queue/typing", (message) => {
               const data = JSON.parse(message.body);
               const typingStatus = data.isTyping !== undefined ? data.isTyping : data.typing;
@@ -117,23 +126,29 @@ export const useChat = (recipientUsername: string) => {
     };
   }, [recipientUsername, markAsRead]);
 
-  const sendMessage = (content: string) => {
-    if (stompClient.current?.connected && content.trim()) {
-      stompClient.current.publish({
-        destination: `/app/chat.sendMessage.private/${recipientUsername}`,
-        body: JSON.stringify({ content }),
-      });
-    }
-  };
+  const sendMessage = useCallback(
+    (content: string) => {
+      if (stompClient.current?.connected && content.trim()) {
+        stompClient.current.publish({
+          destination: `/app/chat.sendMessage.private/${recipientUsername}`,
+          body: JSON.stringify({ content }),
+        });
+      }
+    },
+    [recipientUsername],
+  );
 
-  const sendTypingStatus = (isTyping: boolean) => {
-    if (stompClient.current?.connected) {
-      stompClient.current.publish({
-        destination: `/app/chat.typing/${recipientUsername}`,
-        body: JSON.stringify({ isTyping }),
-      });
-    }
-  };
+  const sendTypingStatus = useCallback(
+    (isTyping: boolean) => {
+      if (stompClient.current?.connected) {
+        stompClient.current.publish({
+          destination: `/app/chat.typing/${recipientUsername}`,
+          body: JSON.stringify({ isTyping }),
+        });
+      }
+    },
+    [recipientUsername],
+  );
 
   return { messages, isPartnerTyping, sendMessage, sendTypingStatus };
 };

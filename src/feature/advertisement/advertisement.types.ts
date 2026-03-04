@@ -48,4 +48,7 @@ export interface AdSearchParams {
   maxPrice?: number;
   categoryId?: number;
   active?: boolean;
+  page?: number;
+  size?: number;
+  sort?: string;
 }

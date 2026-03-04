@@ -14,7 +14,7 @@ export const RotatingText = () => {
   }, []);
 
   return (
-    <span className="translate-y-[0.2px] inline-flex items-baseline h-[1em] relative overflow-hidden w-[290px] text-left ml-1 md:ml-0 align-baseline">
+    <span className="translate-y-[0.5px] inline-flex items-center justify-start h-[1.5em] relative w-[290px] text-left ml-1 md:ml-0 align-middle [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)]">
       <AnimatePresence mode="wait">
         <motion.span
           key={words[index]}
@@ -22,9 +22,6 @@ export const RotatingText = () => {
           animate={{ y: "0%", opacity: 1 }}
           exit={{ y: "-100%", opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          /* KLUCZ: Usunęliśmy absolute, daliśmy relative i inline-block.
-           Dzięki temu słowo 'bezpiecznie' raportuje swoją wysokość do h1!
-        */
           className="relative inline-block text-primary font-bold whitespace-nowrap"
         >
           {words[index]}

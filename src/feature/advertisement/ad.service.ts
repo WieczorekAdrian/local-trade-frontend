@@ -9,7 +9,7 @@ import type {
 export const getAllAds = async (params?: AdSearchParams) => {
   const query = { active: true, ...params };
   const response = await api.get("/advertisements/search", { params: query });
-  return response.data.content;
+  return response.data;
 };
 
 export const formatDate = (dateString: string | undefined) => {

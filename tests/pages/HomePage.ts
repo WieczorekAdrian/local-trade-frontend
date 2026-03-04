@@ -11,7 +11,7 @@ export class HomePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.heading = page.getByRole("heading", { name: "Najnowsze okazje" });
+    this.heading = page.getByRole("heading", { name: "Przeglądaj okazje" });
     this.categoryFilter = page.locator("header .pt-2");
     this.adCards = page.locator(".grid > div");
     this.loadingSpinner = page.locator(".animate-spin");

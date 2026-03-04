@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { getAdById, formatDate } from "@/feature/advertisement/ad.service";
 import { FavoriteButton } from "@/components/common/FavoriteButton";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,7 @@ import {
   ImageOff,
   ChevronLeft,
   ChevronRight,
-  Maximize2, // Dodany import ikony zamknięcia
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/auth.context";
@@ -31,6 +32,7 @@ const fixDockerUrl = (url: string | null | undefined) => {
 };
 
 export default function SingleAdPage() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,11 +79,14 @@ export default function SingleAdPage() {
   return (
     <>
       <div className="container mx-auto px-4 py-8 pb-20">
-        <Link to="/">
-          <Button variant="ghost" className="mb-6 gap-2 pl-0 hover:bg-transparent hover:text-primary">
-            <ArrowLeft className="h-4 w-4" /> Wróć do listy
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6 gap-2 pl-0 hover:bg-transparent hover:text-primary"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Wróć
+        </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-4">
@@ -246,8 +251,8 @@ export default function SingleAdPage() {
         <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-10 duration-300">
           <ChatWindow
             recipientUsername={ad.sellerEmail || "Użytkownik"}
-            variant="bubble" // <- To aktywuje tryb dymka
-            onClose={() => setIsChatOpen(false)} // <- To podpina wewnętrzny przycisk "X"
+            variant="bubble" //
+            onClose={() => setIsChatOpen(false)} //
           />
         </div>
       )}

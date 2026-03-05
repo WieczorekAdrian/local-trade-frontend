@@ -38,6 +38,14 @@ export interface Advertisement {
   isFavorite?: boolean;
 }
 
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
 export interface FavoriteAdvertisementDto {
   advertisementId: string;
 }

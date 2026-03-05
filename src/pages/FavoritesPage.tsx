@@ -5,7 +5,7 @@ import { HeartOff } from "lucide-react";
 export function FavoritesPage() {
   const { ads, favoriteIds, loading } = useAdvertisement();
 
-  const favoriteAds = ads.filter((ad) => favoriteIds.has(ad.advertisementId));
+  const favoriteAds = ads?.filter((ad) => favoriteIds?.has(ad.advertisementId)) ?? [];
 
   return (
     <div className="min-h-screen bg-background pb-20">

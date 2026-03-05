@@ -1,10 +1,14 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
-import type { Advertisement, FavoriteAdvertisementDto } from "@/feature/advertisement/advertisement.types";
+import type {
+  Advertisement,
+  FavoriteAdvertisementDto,
+  PaginatedResponse,
+} from "@/feature/advertisement/advertisement.types";
 import { getAllAds, getMyFavorites, addToFavorite, removeFromFavorite } from "@/feature/advertisement/ad.service";
 import { useAuth } from "@/auth/auth.context";
 
 interface AdvertisementContextType {
-  ads: Advertisement[];
+  ads: Advertisement[] | PaginatedResponse<Advertisement>;
   favoriteIds: Set<string>;
   toggleFavorite: (id: string) => Promise<void>;
   loading: boolean;
@@ -86,7 +90,7 @@ export const AdvertisementProvider = ({ children }: { children: ReactNode }) => 
     <AdvertisementContext.Provider
       value={{
         ads,
-        favoriteIds, // Udostępniamy Set do sprawdzania stanu
+        favoriteIds,
         toggleFavorite,
         loading,
         refreshAds: fetchAds,
